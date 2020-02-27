@@ -1,0 +1,29 @@
+{
+  "name": "raisin-gl",
+  "version": "0.0.1",
+  "description": "A fun library to draw pretty things using rays.",
+  "directories": {
+    "example": "examples"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "serve-examples": "webpack-dev-server --config examples/webpack.config.js --mode development --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jahow/raisin-gl.git"
+  },
+  "author": "Olivier Guyot",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jahow/raisin-gl/issues"
+  },
+  "homepage": "https://github.com/jahow/raisin-gl#readme",
+  "devDependencies": {
+    "buble": "^0.19.8",
+    "buble-loader": "^0.5.1",
+    "webpack": "^4.41.6",
+    "webpack-cli": "^3.3.11",
+    "webpack-dev-server": "^3.10.3"
+  }
+}
