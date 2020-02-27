@@ -25,8 +25,15 @@ uniform vec2 u_resolution;
 
 out vec4 outColor;
 
+float circle(vec2 center, float radius) {
+  float d =  distance(vec2(gl_FragCoord), center) - radius;
+  return smoothstep(1.0, -1.0, d);
+}
+
 void main() {
-  outColor = vec4(1, gl_FragCoord.x / u_resolution.x, gl_FragCoord.y / u_resolution.y, 1);
+  float value = circle(vec2(40.0, 60.0), 160.0);
+  
+  outColor = value * vec4(1, gl_FragCoord.x / u_resolution.x, gl_FragCoord.y / u_resolution.y, 1);
 }
 `;
 
