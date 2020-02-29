@@ -4,6 +4,7 @@ import vs from './vs.glsl'
 
 const CIRCLE_PRIMITIVE = 1;
 const BOX_PRIMITIVE = 2;
+const UNION_OPERATOR = 10;
 
 /**
  * @param {HTMLElement} htmlElement Container element for the scene; sizing will be kept
@@ -35,6 +36,9 @@ export function createScene(htmlElement) {
     CIRCLE_PRIMITIVE, 400, 180, 30, // x, y, radius
     BOX_PRIMITIVE, 300, 350, 40, 60, // x, y, width, height
     BOX_PRIMITIVE, 20, 230, 10, 10, // x, y, width, height
+    UNION_OPERATOR, 25, 29, // offset a, offset b
+    CIRCLE_PRIMITIVE, 500, 150, 90, // x, y, radius
+    BOX_PRIMITIVE, 600, 120, 120, 150, // x, y, width, height
   ]);
   const primitivesOffsets = new Int32Array([
     0,
@@ -42,6 +46,7 @@ export function createScene(htmlElement) {
     8,
     12,
     17,
+    22
   ]);
 
   resizeCanvasToDisplaySize(gl.canvas);
@@ -51,7 +56,7 @@ export function createScene(htmlElement) {
 
   // set uniforms
   gl.uniform2f(resolutionLoc, gl.canvas.width, gl.canvas.height);
-  gl.uniform1i(primitiveCountLoc, 5);
+  gl.uniform1i(primitiveCountLoc, 6);
 
   gl.uniform1fv(primitivesDataLoc, primitives);
   gl.uniform1iv(primitivesOffsetsLoc, primitivesOffsets);
