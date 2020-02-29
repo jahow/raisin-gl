@@ -13,9 +13,16 @@ module.exports = {
       },
       include: [
         path.join(__dirname, '..', 'src'),
-        path.join(__dirname)
+        __dirname
       ]
-    }]
+    },
+      {
+        test: /\.glsl$/,
+        use: [{ loader: "raw-loader" }],
+        include: [
+          path.join(__dirname, '..', 'src'),
+        ]
+      }]
   },
   devtool: 'source-map',
   output: {

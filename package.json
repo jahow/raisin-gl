@@ -22,6 +22,7 @@
   "devDependencies": {
     "buble": "^0.19.8",
     "buble-loader": "^0.5.1",
+    "raw-loader": "^4.0.0",
     "webpack": "^4.41.6",
     "webpack-cli": "^3.3.11",
     "webpack-dev-server": "^3.10.3"
