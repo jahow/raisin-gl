@@ -16,7 +16,7 @@
  * @property {Transform} [transform]
  */
 
-const defaultPaint = makeSolidPaint(0.85, 0.9, 0.3, 1)
+const defaultPaint = makeSolidPaint(0.65, 0.9, 0.4, 1)
 
 
 /**
@@ -45,10 +45,11 @@ export function makeCircle(x, y, radius) {
  * @param {number} g
  * @param {number} b
  * @param {number} a
+ * @param {number} [scatter]
  * @return {Paint}
  */
-export function makeSolidPaint(r, g, b, a) {
-  return { type: 'solid', attributes: [r, g, b, a] }
+export function makeSolidPaint(r, g, b, a, scatter) {
+  return { type: 'solid', attributes: [r, g, b, a, scatter !== undefined ? scatter : 5] }
 }
 
 /**

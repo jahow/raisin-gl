@@ -16,7 +16,7 @@ scene = addPrimitive(scene, makeCircle(-25, -15, 50))
 scene = addPrimitive(scene,
   applyPaint(
     makeBox(25, 15, 100, 100),
-    makeSolidPaint(0.4, 0.8, 0.9, 1)
+    makeSolidPaint(0.45, 0.8, 1, 1)
   )
 )
 
