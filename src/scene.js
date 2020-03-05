@@ -1,13 +1,3 @@
-/**
- * @typedef Transform number[6]
- */
-
-/**
- * @typedef Primitive Object
- * @property {string} type
- * @property {number[]} attributes
- * @property {Transform} [transform]
- */
 
 /**
  * @typedef Scene Object
@@ -37,7 +27,7 @@ export function addPrimitive(scene, ...primitives) {
 }
 
 /**
- * @param {Scene[]} scenes
+ * @param {...Scene} scenes
  * @return {Scene}
  */
 export function mergeScenes(...scenes) {
