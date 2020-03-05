@@ -9,7 +9,10 @@ module.exports = {
     rules: [{
       test: /\.js$/,
       use: {
-        loader: 'buble-loader'
+        loader: 'buble-loader',
+        options: {
+          objectAssign: 'Object.assign'
+        }
       },
       include: [
         path.join(__dirname, '..', 'src'),
