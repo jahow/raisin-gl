@@ -12,11 +12,11 @@
  * @typedef Primitive Object
  * @property {string} type
  * @property {Paint} paint
- * @property {number[]} attributes
+ * @property {(number|Primitive)[]} attributes
  * @property {Transform} [transform]
  */
 
-const defaultPaint = makeSolidPaint(0.65, 0.9, 0.4, 1)
+const defaultPaint = makeSolidPaint(0.65, 0.95, 0.4, 0.7)
 
 
 /**
@@ -38,6 +38,19 @@ export function makeBox(x, y, width, height) {
  */
 export function makeCircle(x, y, radius) {
   return { type: 'circle', attributes: [x, y, radius], paint: defaultPaint }
+}
+
+/**
+ * @param {Primitive} p1
+ * @param {Primitive} p2
+ * @return {Primitive}
+ */
+export function makeUnion(p1, p2) {
+  return {
+    type: 'union',
+    attributes: [p1, p2],
+    paint: defaultPaint
+  }
 }
 
 /**

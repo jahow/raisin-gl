@@ -49,13 +49,13 @@ float box(vec2 p, vec2 center, vec2 size) {
 }
 
 float opSmoothUnion(float sdf1, float sdf2) {
-    //return sdf1 + sdf2;
     float k = 10.0;
     float h = clamp(0.5 + 0.5 * (sdf2 - sdf1) / k, 0.0, 1.0);
     return mix(sdf2, sdf1, h) - k * h * (1.0 - h);
 }
 
 vec4 paintSolid(float sdf, int offset, vec4 previous, inout vec2 p) {
+    // compute out color and alpha
     vec4 color = vec4(
         u_paintData[offset + 1],
         u_paintData[offset + 2],
@@ -63,12 +63,15 @@ vec4 paintSolid(float sdf, int offset, vec4 previous, inout vec2 p) {
         u_paintData[offset + 4] * smoothstep(1.0, -1.0, sdf)
     );
     float alpha = clamp(0.0, 1.0, color.a + previous.a);
+
+    // displace ray
     float scatter = u_paintData[offset + 5];
     float noiseX = noise(p * 110.0 + randomOffset);
     float noiseY = noise(p * -130.0 + randomOffset);
     p.x += noiseX * noiseX * sign(noiseX) * scatter;
     p.y += noiseY * noiseY * sign(noiseY) * scatter;
-    return vec4(color.rgb * previous.rgb, alpha);
+
+    return vec4(previous.rgb * previous.a + color.rgb * (1.0 - previous.a), alpha);
 }
 
 float getSdf(vec2 p, int offset) {

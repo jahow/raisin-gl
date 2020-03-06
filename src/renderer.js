@@ -92,24 +92,36 @@ export function renderScene(renderer, scene) {
       , [])
   )
 
-  const primitives = new Float32Array(
-    scene.primitives.reduce((prev, curr) =>
-      [
-        ...prev,
-        getPrimitiveConst(curr.type),
-        paintOffsets[paintObjs.indexOf(curr.paint)],
-        ...curr.attributes
-      ], [])
-  )
+  let primitives = []
+  let primitiveOffsets = []
 
-  offset = 0
-  const primitivesOffsets = new Int32Array(
-    scene.primitives.reduce((prev, curr) => {
-      const result = [...prev, offset]
-      offset += curr.attributes.length + 2
-      return result
-    }, [])
-  )
+  /**
+   * @param {Primitive} p
+   * @return {number} offset of added primitive
+   */
+  function addPrimitive(p) {
+    const attrs = p.attributes.map(attrToFloat)
+    const offset = primitives.length
+    primitives = [
+      ...primitives,
+      getPrimitiveConst(p.type),
+      paintOffsets[paintObjs.indexOf(p.paint)],
+      ...attrs
+    ]
+    return offset
+  }
+
+  /**
+   * @param {number|Primitive} attr
+   * @return {number}
+   */
+  function attrToFloat(attr) {
+    return typeof attr === 'number' ? attr : addPrimitive(attr)
+  }
+
+  scene.primitives.forEach((p, i) => {
+    primitiveOffsets[i] = addPrimitive(p)
+  })
 
   resizeCanvasToDisplaySize(gl.canvas)
   gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
@@ -122,7 +134,7 @@ export function renderScene(renderer, scene) {
 
   gl.uniform1fv(primitivesDataLoc, primitives)
   gl.uniform1fv(paintDataLoc, paints)
-  gl.uniform1iv(primitivesOffsetsLoc, primitivesOffsets)
+  gl.uniform1iv(primitivesOffsetsLoc, primitiveOffsets)
 
   // draw
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
