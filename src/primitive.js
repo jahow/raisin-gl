@@ -62,7 +62,7 @@ export function makeUnion(p1, p2) {
  * @return {Paint}
  */
 export function makeSolidPaint(r, g, b, a, scatter) {
-  return { type: 'solid', attributes: [r, g, b, a, scatter !== undefined ? scatter : 5] }
+  return { type: 'solid', attributes: [r, g, b, a, scatter !== undefined ? scatter : 3] }
 }
 
 /**

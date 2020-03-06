@@ -18,24 +18,33 @@ int SAMPLES = 8;
 
 float randomOffset = 0.0;
 
-// from https://www.shadertoy.com/view/lsf3WH
-float hash(vec2 p)  // replace this by something better
+// taken from https://www.shadertoy.com/view/MdtBzH
+#define G(v) grad(hash(I+v),p-v)
+#define fade(t)  t * t * t * (t * (t * 6. - 15.) + 10.) // super-smoothstep
+
+// std int hash, inspired from https://www.shadertoy.com/view/XlXcW4
+vec3 hash3i( uvec3 x )
 {
-    p  = 50.0*fract( p*0.3183099 + vec2(0.71,0.113));
-    return -1.0+2.0*fract( p.x*p.y*(p.x+p.y) );
+    #   define scramble  x = ( (x>>8U) ^ x.yzx ) * 1103515245U // GLIB-C const
+    scramble; scramble; scramble;
+    return vec3(x) / float(0xffffffffU) + 1e-30; // <- eps to fix a windows/angle bug
+}
+    #define unsigned(v) ( (v) >= 0. ? uint(v) : -1U-uint(-(v)) ) // for uint(float < 0) is bugged
+    #define hash(v) hash3i(uvec3(unsigned((v).x),unsigned((v).y),11)).x
+
+float grad(float r, vec2 p) {
+    int h = int(r*256.) & 15;
+    float u = h<8 ? p.x : p.y,                 // 12 gradient directions
+    v = h<4 ? p.y : h==12||h==14 ? p.x : 0.; // p.z;
+    return ((h&1) == 0 ? u : -u) + ((h&2) == 0 ? v : -v);
 }
 
-float noise( in vec2 p )
-{
-    vec2 i = floor( p );
-    vec2 f = fract( p );
+float blurNoise(in vec2 p) {
+    vec2 I = floor(p); p -= I;
+    vec2 f = fade(p);
 
-    vec2 u = f*f*(3.0-2.0*f);
-
-    return mix( mix( hash( i + vec2(0.0,0.0) ),
-    hash( i + vec2(1.0,0.0) ), u.x),
-    mix( hash( i + vec2(0.0,1.0) ),
-    hash( i + vec2(1.0,1.0) ), u.x), u.y);
+    return mix( mix( G(vec2(0,0)),G(vec2(1,0)), f.x),
+    mix( G(vec2(0,1)),G(vec2(1,1)), f.x), f.y );
 }
 
 float circle(vec2 p, vec2 center, float radius) {
@@ -56,22 +65,27 @@ float opSmoothUnion(float sdf1, float sdf2) {
 
 vec4 paintSolid(float sdf, int offset, vec4 previous, inout vec2 p) {
     // compute out color and alpha
+    float intensity = smoothstep(1.0, -1.0, sdf);
+    if (sdf < 0.0) {
+        intensity *= 0.85 + 0.1 * smoothstep(-12.0, 0.0, sdf)
+            + 0.05 * blurNoise(p * 0.4);
+    }
     vec4 color = vec4(
         u_paintData[offset + 1],
         u_paintData[offset + 2],
         u_paintData[offset + 3],
-        u_paintData[offset + 4] * smoothstep(1.0, -1.0, sdf)
+        u_paintData[offset + 4] * intensity
     );
-    float alpha = clamp(0.0, 1.0, color.a + previous.a);
+    float addedAlpha = previous.a + color.a * (1.0 - previous.a);
 
     // displace ray
     float scatter = u_paintData[offset + 5];
-    float noiseX = noise(p * 110.0 + randomOffset);
-    float noiseY = noise(p * -130.0 + randomOffset);
-    p.x += noiseX * noiseX * sign(noiseX) * scatter;
-    p.y += noiseY * noiseY * sign(noiseY) * scatter;
+    float noiseX = blurNoise(p + 10.715 + randomOffset);
+    float noiseY = blurNoise(p + 5.179 + randomOffset);
+    p.x += noiseX * scatter;
+    p.y += noiseY * scatter;
 
-    return vec4(previous.rgb * previous.a + color.rgb * (1.0 - previous.a), alpha);
+    return vec4(previous.rgb * previous.a + color.rgb * (1.0 - previous.a), addedAlpha);
 }
 
 float getSdf(vec2 p, int offset) {

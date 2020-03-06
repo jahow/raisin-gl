@@ -22,5 +22,11 @@ scene = addPrimitive(scene,
     makeSolidPaint(0.45, 0.88, 1, 0.7)
   )
 )
+scene = addPrimitive(scene,
+  applyPaint(
+    makeBox(68, 15, 120, 70),
+    makeSolidPaint(1, 0.2, 0.1, 0.7)
+  )
+)
 
 renderScene(renderer, scene)
